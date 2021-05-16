@@ -20,13 +20,13 @@ from keras.utils import multi_gpu_model
 
 class YOLO(object):
     _defaults = {
-        "model_path": 'model_data/yolo.h5',
-        "anchors_path": 'model_data/yolo_anchors.txt',
-        "classes_path": 'model_data/coco_classes.txt',
+        "model_path": 'model_data/tiny_yolo_weights.h5',
+        "anchors_path": 'model_data/tiny_yolo_anchors.txt',
+        "classes_path": 'model_data/human_class.txt',
         "score" : 0.3,
         "iou" : 0.45,
         "model_image_size" : (416, 416),
-        "gpu_num" : 1,
+        "gpu_num" : 0,
     }
 
     @classmethod
@@ -209,3 +209,20 @@ def detect_video(yolo, video_path, output_path=""):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     yolo.close_session()
+
+def objectDetection(file, model_path, class_path):
+    yolo = YOLO(
+        model_path=model_path,
+        classes_path=class_path,
+        anchors_path='model_data/tiny_yolo_anchors.txt'
+    )
+
+    image = Image.open(file)
+    result_image = yolo.detect_image(image)
+    image.save('results.png')
+
+    from IPython.display import display
+    display(result_image)
+
+if __name__ == "__main__":
+    objectDetection('sample.png', 'model_data/human_final.h5', 'model_data/human_class.txt')
